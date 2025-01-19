@@ -1,10 +1,13 @@
 const express = require('express')
 const Job = require('../models/Job')
+const protect = require('../middleware/authMiddleware');
 const router = express.Router();
+// const upload = require('../middleware/upload')
+// const jobController = require('../controllers/jobController')
 
 // Create a new job application route
 
-router.post('/jobs', async (req, res) => {
+router.post('/', protect, async (req, res) => {
     try {
         const newJob = new Job({
             company: req.body.company,
@@ -20,8 +23,10 @@ router.post('/jobs', async (req, res) => {
     }
 })
 
+
+
 // Get all job applications
-router.get('/jobs', async (req, res) => {
+router.get('/', protect, async (req, res) => {
     try {
         const jobs = await Job.find().populate('user', 'username email')
         res.json(jobs)
@@ -31,7 +36,7 @@ router.get('/jobs', async (req, res) => {
 })
 
 // Update a job application
-router.put('/jobs/:id', async (req, res) => {
+router.put('/:id', protect, async (req, res) => {
     try {
         const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true })
         res.json(updatedJob)
@@ -41,7 +46,7 @@ router.put('/jobs/:id', async (req, res) => {
 })
 
 // Delete a job application
-router.delete('/jobs/:id', async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
     try {
         await Job.findByIdAndDelete(req.params.id);
         res.json({ message: 'Job deleted successfully' })
